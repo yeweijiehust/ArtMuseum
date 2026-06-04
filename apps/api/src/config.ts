@@ -13,6 +13,9 @@ export interface AppConfig {
   mongoUri?: string;
   mongoDb: string;
   cloudinaryUrl?: string;
+  cloudinaryCloudName?: string;
+  cloudinaryApiKey?: string;
+  cloudinaryApiSecret?: string;
   enableApiDocs: boolean;
   dataStore: DataStoreMode;
   storageDriver: StorageDriverMode;
@@ -32,6 +35,9 @@ export function loadConfig(overrides: Partial<AppConfig> = {}): AppConfig {
     mongoUri: overrides.mongoUri ?? process.env.MONGODB_URI,
     mongoDb: overrides.mongoDb ?? process.env.MONGODB_DB ?? "artmuseum",
     cloudinaryUrl: overrides.cloudinaryUrl ?? process.env.CLOUDINARY_URL,
+    cloudinaryCloudName: overrides.cloudinaryCloudName ?? process.env.CLOUDINARY_CLOUD_NAME,
+    cloudinaryApiKey: overrides.cloudinaryApiKey ?? process.env.CLOUDINARY_API_KEY,
+    cloudinaryApiSecret: overrides.cloudinaryApiSecret ?? process.env.CLOUDINARY_API_SECRET,
     enableApiDocs: overrides.enableApiDocs ?? process.env.ENABLE_API_DOCS === "true",
     dataStore,
     storageDriver,
@@ -40,10 +46,17 @@ export function loadConfig(overrides: Partial<AppConfig> = {}): AppConfig {
   if (config.dataStore === "mongo" && !config.mongoUri) {
     throw new Error("MONGODB_URI is required when DATA_STORE is mongo");
   }
-  if (config.storageDriver === "cloudinary" && !config.cloudinaryUrl) {
-    throw new Error("CLOUDINARY_URL is required when STORAGE_DRIVER is cloudinary");
+  if (config.storageDriver === "cloudinary" && !hasCloudinaryConfig(config)) {
+    throw new Error("CLOUDINARY_URL or CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET are required when STORAGE_DRIVER is cloudinary");
   }
   return config;
+}
+
+function hasCloudinaryConfig(config: AppConfig) {
+  return Boolean(
+    config.cloudinaryUrl ||
+      (config.cloudinaryCloudName && config.cloudinaryApiKey && config.cloudinaryApiSecret)
+  );
 }
 
 function normalizeDataStore(value: string | undefined): DataStoreMode {

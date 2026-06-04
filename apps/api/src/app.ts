@@ -127,7 +127,12 @@ function createImageStorage(config: AppConfig): ImageStorage {
   if (config.storageDriver === "fake") {
     return new FakeImageStorage();
   }
-  return new CloudinaryImageStorage(config.cloudinaryUrl);
+  return new CloudinaryImageStorage({
+    cloudinaryUrl: config.cloudinaryUrl,
+    cloudName: config.cloudinaryCloudName,
+    apiKey: config.cloudinaryApiKey,
+    apiSecret: config.cloudinaryApiSecret
+  });
 }
 
 function docsEnabled(config: AppConfig) {

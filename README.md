@@ -25,7 +25,9 @@ Copy `.env.example` to `.env` for local production-like runs and set:
 
 - `MONGODB_URI`
 - `MONGODB_DB`
-- `CLOUDINARY_URL`
+- `CLOUDINARY_CLOUD_NAME`
+- `CLOUDINARY_API_KEY`
+- `CLOUDINARY_API_SECRET`
 - `JWT_SECRET`
 - `COOKIE_SECRET`
 - `ENABLE_API_DOCS`
@@ -48,8 +50,10 @@ Required Render environment variables:
 
 - `MONGODB_URI`
 - `MONGODB_DB`
-- `CLOUDINARY_URL`
+- `CLOUDINARY_CLOUD_NAME`
+- `CLOUDINARY_API_KEY`
+- `CLOUDINARY_API_SECRET`
 - `JWT_SECRET`
 - `COOKIE_SECRET`
 
-`render.yaml` generates cookie/JWT secrets for Blueprint-created services and leaves MongoDB/Cloudinary values to be entered in Render. The API binds to Render's provided `PORT` and serves the built React frontend in production.
+`render.yaml` generates cookie/JWT secrets for Blueprint-created services and leaves MongoDB/Cloudinary values to be entered in Render. The Cloudinary values match the `cloud_name`, `api_key`, and `api_secret` fields shown in the Cloudinary setup screen. The API also supports `CLOUDINARY_URL=cloudinary://api_key:api_secret@cloud_name` if you prefer Cloudinary's single environment variable format. The API binds to Render's provided `PORT` and serves the built React frontend in production.
