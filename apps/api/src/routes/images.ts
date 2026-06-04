@@ -152,7 +152,8 @@ export const imageRoutes: FastifyPluginAsyncTypebox = async (app) => {
           altText: cleanText(upload.fields.altText, 300)
         });
         return reply.code(201).send(toGalleryImage(image));
-      } catch {
+      } catch (error) {
+        request.log.error({ err: error }, "Image upload storage failure");
         return sendError(reply, 502, ErrorCodes.StorageFailure);
       }
     }
@@ -231,7 +232,8 @@ export const imageRoutes: FastifyPluginAsyncTypebox = async (app) => {
         await app.imageStorage.delete(image.cloudinaryPublicId);
         await app.store.deleteImage(image.id);
         return reply.code(204).send(null);
-      } catch {
+      } catch (error) {
+        request.log.error({ err: error }, "Image delete storage failure");
         return sendError(reply, 502, ErrorCodes.StorageFailure);
       }
     }

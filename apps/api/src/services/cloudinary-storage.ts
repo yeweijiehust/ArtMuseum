@@ -59,32 +59,45 @@ export function optimizedImageUrl(publicId: string) {
 }
 
 function configureCloudinary(config: CloudinaryStorageConfig) {
-  if (config.cloudinaryUrl) {
-    const parsed = parseCloudinaryUrl(config.cloudinaryUrl);
-    cloudinary.config({
-      cloud_name: parsed.cloudName,
-      api_key: parsed.apiKey,
-      api_secret: parsed.apiSecret,
-      secure: true
-    });
-    return;
-  }
+  const credentials = resolveCloudinaryCredentials(config);
   cloudinary.config({
-    cloud_name: config.cloudName,
-    api_key: config.apiKey,
-    api_secret: config.apiSecret,
+    cloud_name: credentials.cloudName,
+    api_key: credentials.apiKey,
+    api_secret: credentials.apiSecret,
     secure: true
   });
 }
 
+export function resolveCloudinaryCredentials(config: CloudinaryStorageConfig) {
+  const cloudName = clean(config.cloudName);
+  const apiKey = clean(config.apiKey);
+  const apiSecret = clean(config.apiSecret);
+  if (cloudName && apiKey && apiSecret) {
+    return { cloudName, apiKey, apiSecret };
+  }
+  if (config.cloudinaryUrl) {
+    return parseCloudinaryUrl(config.cloudinaryUrl);
+  }
+  throw new Error("Cloudinary credentials are missing");
+}
+
 function parseCloudinaryUrl(value: string) {
-  const url = new URL(value);
+  const url = new URL(value.trim());
   if (url.protocol !== "cloudinary:") {
     throw new Error("CLOUDINARY_URL must start with cloudinary://");
   }
-  return {
+  const credentials = {
     cloudName: url.hostname,
     apiKey: decodeURIComponent(url.username),
     apiSecret: decodeURIComponent(url.password)
   };
+  if (!credentials.cloudName || !credentials.apiKey || !credentials.apiSecret) {
+    throw new Error("CLOUDINARY_URL must include api_key, api_secret, and cloud_name");
+  }
+  return credentials;
+}
+
+function clean(value: string | undefined) {
+  const cleaned = value?.trim();
+  return cleaned || undefined;
 }
