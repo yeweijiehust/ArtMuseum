@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: artmuseum
+    runtime: node
+    plan: free
+    autoDeployTrigger: checksPass
+    buildCommand: "pnpm install --frozen-lockfile && pnpm build"
+    startCommand: "pnpm start"
+    healthCheckPath: "/api/health"
+    envVars:
+      - key: NODE_ENV
+        value: "production"
+      - key: NODE_VERSION
+        value: "24.14.1"
+      - key: ENABLE_API_DOCS
+        value: "false"
+      - key: MONGODB_URI
+        sync: false
+      - key: MONGODB_DB
+        value: "artmuseum"
+      - key: CLOUDINARY_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: COOKIE_SECRET
+        generateValue: true
