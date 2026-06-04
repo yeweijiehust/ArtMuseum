@@ -1,0 +1,85 @@
+{
+  "app": {
+    "name": "Art Museum"
+  },
+  "language": {
+    "switch": "Language"
+  },
+  "nav": {
+    "home": "Home",
+    "primary": "Primary navigation",
+    "upload": "Upload",
+    "mine": "My uploads",
+    "login": "Log in",
+    "logout": "Log out",
+    "register": "Register"
+  },
+  "common": {
+    "loading": "Loading...",
+    "close": "Close"
+  },
+  "gallery": {
+    "title": "Public Gallery",
+    "subtitle": "A responsive collection of uploaded photography works.",
+    "label": "Photography gallery",
+    "emptyTitle": "No works yet",
+    "emptyBody": "Uploaded photographs will appear here.",
+    "loadFailed": "The gallery could not be loaded.",
+    "noDescription": "No description.",
+    "by": "By {{name}}"
+  },
+  "auth": {
+    "loginTitle": "Log in",
+    "registerTitle": "Create account",
+    "loginAction": "Log in",
+    "registerAction": "Create account",
+    "needAccount": "Need an account?",
+    "haveAccount": "Already registered?"
+  },
+  "upload": {
+    "title": "Upload image",
+    "action": "Upload"
+  },
+  "mine": {
+    "title": "My uploads",
+    "subtitle": "Edit titles, descriptions, alt text, or remove your own images.",
+    "emptyTitle": "No uploads yet",
+    "emptyBody": "Your public images will appear here after uploading.",
+    "loadFailed": "Your uploads could not be loaded.",
+    "save": "Save",
+    "delete": "Delete"
+  },
+  "forms": {
+    "displayName": "Display name",
+    "email": "Email",
+    "password": "Password",
+    "imageFile": "Image file",
+    "title": "Title",
+    "description": "Description",
+    "altText": "Alt text",
+    "emailInvalid": "Enter a valid email address.",
+    "passwordShort": "Password must be at least 8 characters.",
+    "passwordLong": "Password must be 128 characters or fewer.",
+    "displayNameShort": "Display name must be at least 2 characters.",
+    "displayNameLong": "Display name must be 80 characters or fewer.",
+    "titleRequired": "Title is required.",
+    "titleLong": "Title must be 120 characters or fewer.",
+    "descriptionLong": "Description must be 1000 characters or fewer.",
+    "altLong": "Alt text must be 300 characters or fewer.",
+    "fileRequired": "Choose one image file."
+  },
+  "errors": {
+    "VALIDATION_ERROR": "Please check the highlighted fields.",
+    "BAD_REQUEST": "The request could not be completed.",
+    "UNAUTHORIZED": "Please log in first.",
+    "FORBIDDEN": "You do not have permission to change this image.",
+    "NOT_FOUND": "The requested item was not found.",
+    "EMAIL_EXISTS": "That email is already registered.",
+    "INVALID_CREDENTIALS": "Email or password is incorrect.",
+    "FILE_REQUIRED": "Choose an image file.",
+    "TITLE_REQUIRED": "Title is required.",
+    "INVALID_FILE_TYPE": "Use a JPG, PNG, or WebP image.",
+    "FILE_TOO_LARGE": "The image must be 10 MB or smaller.",
+    "STORAGE_FAILURE": "The image storage service could not save the file."
+  }
+}
