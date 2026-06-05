@@ -1,3 +1,6 @@
+import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
+import { join } from "node:path";
+import { tmpdir } from "node:os";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { ErrorCodes } from "@artmuseum/shared";
 import { createApp } from "../app.js";
@@ -35,6 +38,33 @@ describe("Fastify API", () => {
     expect(body.openapi).toMatch(/^3\./);
     expect(body.paths["/api/auth/register"].post.tags).toContain("Auth");
     expect(body.paths["/api/images"].post.security).toEqual([{ cookieAuth: [] }]);
+  });
+
+  it("uses long-lived cache headers for built assets but not SPA HTML", async () => {
+    await app.close();
+    const webDistPath = await mkdtemp(join(tmpdir(), "artmuseum-web-"));
+    await mkdir(join(webDistPath, "assets"));
+    await writeFile(join(webDistPath, "index.html"), "<div id=\"root\"></div>");
+    await writeFile(join(webDistPath, "assets", "index-test.js"), "console.log('ok');");
+    app = await createApp({
+      config: {
+        nodeEnv: "production",
+        dataStore: "memory",
+        storageDriver: "fake",
+        jwtSecret: "test-jwt-secret-test-jwt-secret",
+        cookieSecret: "test-cookie-secret-test-cookie-secret",
+        enableApiDocs: false,
+        webDistPath
+      }
+    });
+    await app.ready();
+    const asset = await app.inject({ method: "GET", url: "/assets/index-test.js" });
+    expect(asset.statusCode).toBe(200);
+    expect(asset.headers["cache-control"]).toBe("public, max-age=31536000, immutable");
+    const html = await app.inject({ method: "GET", url: "/zh" });
+    expect(html.statusCode).toBe(200);
+    expect(html.headers["cache-control"]).toBe("public, max-age=0, must-revalidate");
+    await rm(webDistPath, { recursive: true, force: true });
   });
 
   it("registers, logs in, and returns the current user from the session cookie", async () => {

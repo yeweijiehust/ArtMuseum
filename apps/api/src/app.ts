@@ -97,12 +97,17 @@ export async function createApp(options: CreateAppOptions = {}) {
   if (config.nodeEnv === "production" && existsSync(config.webDistPath)) {
     await app.register(fastifyStatic, {
       root: config.webDistPath,
-      prefix: "/"
+      prefix: "/",
+      cacheControl: false,
+      setHeaders(response, pathName) {
+        response.setHeader("Cache-Control", staticCacheControl(pathName));
+      }
     });
     app.setNotFoundHandler((request, reply) => {
       if (request.url.startsWith("/api/")) {
         return sendError(reply, 404, ErrorCodes.NotFound);
       }
+      reply.header("Cache-Control", "public, max-age=0, must-revalidate");
       return reply.sendFile("index.html");
     });
   } else {
@@ -185,4 +190,11 @@ function handleError(error: FastifyError, request: FastifyRequest, reply: Fastif
 
 export function resolveWebIndex(config: AppConfig) {
   return join(config.webDistPath, "index.html");
+}
+
+export function staticCacheControl(pathName: string) {
+  if (/[\\/]assets[\\/]/.test(pathName)) {
+    return "public, max-age=31536000, immutable";
+  }
+  return "public, max-age=0, must-revalidate";
 }
