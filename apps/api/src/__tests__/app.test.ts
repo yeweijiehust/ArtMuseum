@@ -40,6 +40,42 @@ describe("Fastify API", () => {
     expect(body.paths["/api/images"].post.security).toEqual([{ cookieAuth: [] }]);
   });
 
+  it("exposes production API docs only when explicitly enabled", async () => {
+    await app.close();
+    app = await createApp({
+      config: {
+        nodeEnv: "production",
+        dataStore: "memory",
+        storageDriver: "fake",
+        jwtSecret: "test-jwt-secret-test-jwt-secret",
+        cookieSecret: "test-cookie-secret-test-cookie-secret",
+        enableApiDocs: true
+      },
+      logger: false
+    });
+    await app.ready();
+    const enabledUi = await app.inject({ method: "GET", url: "/api/docs" });
+    expect(enabledUi.statusCode).toBe(200);
+    expect(enabledUi.headers["content-type"]).toContain("text/html");
+    const enabledDocs = await app.inject({ method: "GET", url: "/api/docs/json" });
+    expect(enabledDocs.statusCode).toBe(200);
+    await app.close();
+    app = await createApp({
+      config: {
+        nodeEnv: "production",
+        dataStore: "memory",
+        storageDriver: "fake",
+        jwtSecret: "test-jwt-secret-test-jwt-secret",
+        cookieSecret: "test-cookie-secret-test-cookie-secret",
+        enableApiDocs: false
+      },
+      logger: false
+    });
+    await app.ready();
+    const disabledDocs = await app.inject({ method: "GET", url: "/api/docs/json" });
+    expect(disabledDocs.statusCode).toBe(404);
+  });
+
   it("uses long-lived cache headers for built assets but not SPA HTML", async () => {
     await app.close();
     const webDistPath = await mkdtemp(join(tmpdir(), "artmuseum-web-"));
